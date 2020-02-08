@@ -1,5 +1,5 @@
-# _name
-# the first line must be a comment containing the name of this completion function (usually the name of the program prefixed with _)
+# name.sh
+# the first line must be a comment containing the name of program for which this completion function exists)
 
 # root is the start of your completion function.
 # It are all possible completions of your root command

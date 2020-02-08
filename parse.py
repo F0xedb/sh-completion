@@ -22,8 +22,20 @@ class Config:
         self.sections = []
         self.functions = []
     
+    def clean(self, list):
+        """
+        Remove all empty lines and comments
+        """
+        out = []
+        for item in list:
+            if(not item.strip() == "" and not item.strip()[0] == "#"):
+                out.append(re.sub(r'#.*$', '', item))
+        return out
+
+
     def populate(self, stringList):
         self._pullName(stringList)
+        stringList = self.clean(stringList)
         self._pullRoot(stringList)
         self._pullSections(stringList)
         self._pullFunctions(stringList)
@@ -32,7 +44,7 @@ class Config:
         string = stringList[0]
         if(string[0] != "#"):
             raise Exception("Could not determin the program name. Make sure the first line followes this format # <name>")
-        self.name = string[1:]
+        self.name = string[1:].strip()
 
     def _getCharOccurrenceInstr(self, string, char="("):
         occurrence = 0
@@ -97,7 +109,6 @@ class Config:
             if(re.match("^function .*\{", item)):
                 self.functions.append(self._getFunction(stringList, index))
         
-
 class Parse:
     def __init__(self, file):
         """
@@ -122,5 +133,6 @@ if __name__ == '__main__':
     parser = Parse(options.file)
     config = Config()
     config.populate(parser.data)
-    for func in config.functions:
+    print(config.name)
+    for func in config.sections:
         print(func)
