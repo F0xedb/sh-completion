@@ -33,7 +33,6 @@ class Config:
         if(string[0] != "#"):
             raise Exception("Could not determin the program name. Make sure the first line followes this format # <name>")
         self.name = string[1:]
-        print(self.name)
 
     def _getCharOccurrenceInstr(self, string, char="("):
         occurrence = 0
@@ -49,7 +48,7 @@ class Config:
         """
         index = startIndex
         openBrace = self._getCharOccurrenceInstr(stringList[index])
-        section = [stringList[index]]
+        section = [stringList[index].replace("=(","")]
         # gather everything that belongs to the given section
         while not openBrace == 0:
             index +=1
@@ -58,8 +57,6 @@ class Config:
             section.append(stringList[index])
         # filter out the assignment and the end
         section = section[:-1]
-        # extract the name
-        section[0] = section[0].replace("=(","")
         # filter all beginning whitespace and ending whitespace
         for index, item in enumerate(section):
             section[index] = item.strip().replace('"', '')
@@ -70,7 +67,6 @@ class Config:
         for index, part in enumerate(stringList):
             if "root=" in part:
                 self.root = self._getSection(stringList, index)
-                print(self.root)
                 return
     
     def _pullSections(self, stringList):
@@ -79,7 +75,22 @@ class Config:
                 self.sections.append(self._getSection(stringList, index))
 
     def _getFunction(self, stringlist, startIndex):
-        return stringlist[startIndex]
+        """
+        Return a list containing the function.
+        The first element is the name of said function.
+        This is followed by a list of all elements in the function
+        """
+        openBraces = self._getCharOccurrenceInstr(stringlist[startIndex], char="{")
+        index = startIndex
+        function = [stringlist[startIndex].replace("function", "").replace("{", "").strip()]
+        while openBraces > 0:
+            index += 1
+            openBraces += self._getCharOccurrenceInstr(stringlist[index], char="{") 
+            openBraces -= self._getCharOccurrenceInstr(stringlist[index], char="}") 
+            function.append(stringlist[index])
+        # return the function body
+        # we discard the closing brace (which must be at the closing brace)
+        return function[:-1]
 
     def _pullFunctions(self, stringList):
         for index, item in enumerate(stringList):
