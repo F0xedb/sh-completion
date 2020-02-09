@@ -24,6 +24,7 @@ ps=(
 )
 
 # when calling a function by the name of your option you declare a completion list
+# use the longest name that is present in the list
 function -k {
     # list must be present in each function call it contains the list of possible completion functions
     list="$(pgrep bash)"
