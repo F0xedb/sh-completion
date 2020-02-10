@@ -20,7 +20,8 @@ def function_match(functions, elements, prefix="", delimiter="-"):
         # This check must run first because the naming is more specific thus more important
         for element in elements:
             element = prefix + delimiter + element
-            if element == name:
+            bare_element = prefix + element
+            if element == name or bare_element == name:
                 matches.append((function, element))
         if name in elements:
             matches.append((function, name))
@@ -247,6 +248,14 @@ class zshGen:
         payload += "\t_arguments -C \"1: :($list)\""
         return "function {} {}\n".format(name, "{") + payload + "\n}\n"
 
+    def _AppendFunctions(self, functions):
+        out = []
+        for function in functions:
+            if function[0][0] == "_":
+                out.append(self._generateFunction(function, function[0]))
+        return out
+
+
     def generate(self):
         name = self.config.name
         root = "_{}_{}".format(name.replace(".",""), self.config.root[0].replace("-","").strip())
@@ -258,6 +267,8 @@ class zshGen:
         for section in self.config.sections:
             content += self._generateSubCommand(section)
             content += self._generateFunctionSubCommand(section)
+        for func in self._AppendFunctions(self.config.functions):
+            content += func
         return content
 
 if __name__ == '__main__':
