@@ -15,6 +15,11 @@ ps=(
   "-h, --help: Show the process help menu"
   "-a, --all: Show all processes"
   "-k, --kill: Kill a process"
+  "name: Kill a process by its name"
+)
+
+name=(
+    "-f,--full: kill a process by its full name"
 )
 
 # you can even have subcommands for "dashed" options
@@ -28,4 +33,10 @@ ps=(
 function -k {
     # list must be present in each function call it contains the list of possible completion functions
     list="$(pgrep bash)"
+}
+
+# reference by name and option combined
+# the name here is name and the option is -f or --full
+function name-f {
+    list="$(ps -ax | awk '{print $5}')"
 }
